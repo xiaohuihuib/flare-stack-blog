@@ -7,23 +7,24 @@
   "observability": {
     "enabled": true,
   },
+  "keep_vars": true,
   "routes": [
     {
-      "pattern": "DOMAIN_PLACEHOLDER",
+      "pattern": "www.xiaohuihuib.dpdns.org",
       "custom_domain": true,
     },
   ],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "D1_DATABASE_ID",
+      "database_id": "12100bad-df6e-4261-bd92-509ed7605b99",
       "migrations_dir": "migrations",
       "remote": true,
     },
   ],
   "r2_buckets": [
     {
-      "bucket_name": "bucket-name-placeholder",
+      "bucket_name": "blog",
       "binding": "R2",
       "remote": true,
     },
@@ -31,7 +32,7 @@
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "KV_NAMESPACE_ID",
+      "id": "bff005fd99604749a7e8e3e2fe956adf",
       "remote": true,
     },
   ],
