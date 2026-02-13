@@ -1,0 +1,131 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-blog",
+  "compatibility_date": "2025-10-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/server.ts",
+  "observability": {
+    "enabled": true,
+  },
+  "routes": [
+    {
+      "pattern": "DOMAIN_PLACEHOLDER",
+      "custom_domain": true,
+    },
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "D1_DATABASE_ID",
+      "migrations_dir": "migrations",
+      "remote": true,
+    },
+  ],
+  "r2_buckets": [
+    {
+      "bucket_name": "bucket-name-placeholder",
+      "binding": "R2",
+      "remote": true,
+    },
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "KV_NAMESPACE_ID",
+      "remote": true,
+    },
+  ],
+  "workflows": [
+    {
+      "name": "post-process-workflow",
+      "binding": "POST_PROCESS_WORKFLOW",
+      "class_name": "PostProcessWorkflow",
+    },
+    {
+      "name": "comment-moderation-workflow",
+      "binding": "COMMENT_MODERATION_WORKFLOW",
+      "class_name": "CommentModerationWorkflow",
+    },
+    {
+      "name": "scheduled-publish-workflow",
+      "binding": "SCHEDULED_PUBLISH_WORKFLOW",
+      "class_name": "ScheduledPublishWorkflow",
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "RateLimiter",
+      },
+    ],
+  },
+  "ai": {
+    "binding": "AI",
+    "remote": true,
+  },
+  "queues": {
+    "producers": [{ "binding": "QUEUE", "queue": "blog-queue" }],
+    "consumers": [
+      {
+        "queue": "blog-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "rate-limiter-v1",
+      "new_sqlite_classes": ["RateLimiter"],
+    },
+  ],
+  "env": {
+    "test": {
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "RATE_LIMITER",
+            "class_name": "RateLimiter",
+          },
+        ],
+      },
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "R2",
+        },
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+        },
+      ],
+      "workflows": [
+        {
+          "name": "post-process-workflow",
+          "binding": "POST_PROCESS_WORKFLOW",
+          "class_name": "PostProcessWorkflow",
+        },
+        {
+          "name": "comment-moderation-workflow",
+          "binding": "COMMENT_MODERATION_WORKFLOW",
+          "class_name": "CommentModerationWorkflow",
+        },
+        {
+          "name": "scheduled-publish-workflow",
+          "binding": "SCHEDULED_PUBLISH_WORKFLOW",
+          "class_name": "ScheduledPublishWorkflow",
+        },
+      ],
+      "queues": {
+        "producers": [{ "binding": "QUEUE", "queue": "blog-queue" }],
+      },
+    },
+  },
+}
