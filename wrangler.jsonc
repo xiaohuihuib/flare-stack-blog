@@ -1,0 +1,174 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-blog",
+  "compatibility_date": "2026-02-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/server.ts",
+  "observability": {
+    "enabled": true
+  },
+  "keep_vars": true,
+  "routes": [
+    {
+      "pattern": "www.xiaohuihuib.dpdns.org",
+      "custom_domain": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "12100bad-df6e-4261-bd92-509ed7605b99",
+      "migrations_dir": "migrations",
+      "remote": true
+    }
+  ],
+  "r2_buckets": [
+    {
+      "bucket_name": "blog",
+      "binding": "R2",
+      "remote": true
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "bff005fd99604749a7e8e3e2fe956adf",
+      "remote": true
+    }
+  ],
+  "workflows": [
+    {
+      "name": "post-process-workflow",
+      "binding": "POST_PROCESS_WORKFLOW",
+      "class_name": "PostProcessWorkflow"
+    },
+    {
+      "name": "post-auto-snapshot-workflow",
+      "binding": "POST_AUTO_SNAPSHOT_WORKFLOW",
+      "class_name": "PostAutoSnapshotWorkflow"
+    },
+    {
+      "name": "comment-moderation-workflow",
+      "binding": "COMMENT_MODERATION_WORKFLOW",
+      "class_name": "CommentModerationWorkflow"
+    },
+    {
+      "name": "scheduled-publish-workflow",
+      "binding": "SCHEDULED_PUBLISH_WORKFLOW",
+      "class_name": "ScheduledPublishWorkflow"
+    },
+    {
+      "name": "export-workflow",
+      "binding": "EXPORT_WORKFLOW",
+      "class_name": "ExportWorkflow"
+    },
+    {
+      "name": "import-workflow",
+      "binding": "IMPORT_WORKFLOW",
+      "class_name": "ImportWorkflow"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "RateLimiter"
+      },
+      {
+        "name": "PASSWORD_HASHER",
+        "class_name": "PasswordHasher"
+      }
+    ]
+  },
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "queues": {
+    "producers": [{ "binding": "QUEUE", "queue": "blog-queue" }],
+    "consumers": [
+      {
+        "queue": "blog-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 3
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "rate-limiter-v1",
+      "new_sqlite_classes": ["RateLimiter"]
+    },
+    {
+      "tag": "password-hasher-v1",
+      "new_sqlite_classes": ["PasswordHasher"]
+    }
+  ],
+  "env": {
+    "test": {
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "RATE_LIMITER",
+            "class_name": "RateLimiter"
+          },
+          {
+            "name": "PASSWORD_HASHER",
+            "class_name": "PasswordHasher"
+          }
+        ]
+      },
+      "kv_namespaces": [
+        {
+          "binding": "KV"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "R2"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB"
+        }
+      ],
+      "workflows": [
+        {
+          "name": "post-process-workflow",
+          "binding": "POST_PROCESS_WORKFLOW",
+          "class_name": "PostProcessWorkflow"
+        },
+        {
+          "name": "post-auto-snapshot-workflow",
+          "binding": "POST_AUTO_SNAPSHOT_WORKFLOW",
+          "class_name": "PostAutoSnapshotWorkflow"
+        },
+        {
+          "name": "comment-moderation-workflow",
+          "binding": "COMMENT_MODERATION_WORKFLOW",
+          "class_name": "CommentModerationWorkflow"
+        },
+        {
+          "name": "scheduled-publish-workflow",
+          "binding": "SCHEDULED_PUBLISH_WORKFLOW",
+          "class_name": "ScheduledPublishWorkflow"
+        },
+        {
+          "name": "export-workflow",
+          "binding": "EXPORT_WORKFLOW",
+          "class_name": "ExportWorkflow"
+        },
+        {
+          "name": "import-workflow",
+          "binding": "IMPORT_WORKFLOW",
+          "class_name": "ImportWorkflow"
+        }
+      ],
+      "queues": {
+        "producers": [{ "binding": "QUEUE", "queue": "blog-queue" }]
+      }
+    }
+  }
+}
