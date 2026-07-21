@@ -5,9 +5,24 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "main": "./src/server.ts",
   "observability": {
-    "enabled": true
-  },
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
+  }
   "keep_vars": true,
+  "cache": {
+  "enabled": true,
+  },
   "routes": [
     {
       "pattern": "www.xiaohuihuib.dpdns.org",
