@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "flare-stack-blog",
   "compatibility_date": "2026-02-17",
+  "cache": {
+  "enabled": true,
+  },
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "main": "./src/server.ts",
   "observability": {
@@ -20,9 +23,6 @@
     }
   }
   "keep_vars": true,
-  "cache": {
-  "enabled": true,
-  },
   "routes": [
     {
       "pattern": "www.xiaohuihuib.dpdns.org",
