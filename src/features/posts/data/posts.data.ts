@@ -130,7 +130,12 @@ export async function getPosts(
       categoryId: PostsTable.categoryId,
       createdAt: PostsTable.createdAt,
       updatedAt: PostsTable.updatedAt,
-      ...(includeContent ? { contentJson: PostsTable.contentJson } : {}),
+      // contentJson is the editable draft body. In public-snapshot scope every
+      // other column is read from publicSnapshotJson, so returning the draft
+      // here would mix an unpublished body into a published row.
+      ...(includeContent && !publicScope
+        ? { contentJson: PostsTable.contentJson }
+        : {}),
     })
     .from(PostsTable)
     .limit(Math.min(limit, 50))

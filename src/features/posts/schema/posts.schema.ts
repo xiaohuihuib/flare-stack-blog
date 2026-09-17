@@ -180,7 +180,7 @@ export const GetPostsInputSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "Include the editable TipTap body of every item. Pagination, the 50 item limit and every other response field stay the same.",
+      "Include the editable TipTap body of every item. Ignored when taxonomy.scope is public, where every column is read from the Public Content Snapshot instead. Pagination, the 50 item limit and every other response field stay the same.",
     ),
 });
 
@@ -188,6 +188,7 @@ const GetPostsCountInputSchema = GetPostsInputSchema.omit({
   offset: true,
   limit: true,
   sortDir: true,
+  includeContent: true,
 });
 
 const AdminPostListItemSchema = z.object({
@@ -201,7 +202,7 @@ const AdminPostListItemSchema = z.object({
   createdAt: coercedDate,
   updatedAt: coercedDate,
   contentJson: NullableJsonContentSchema.optional().describe(
-    "Only returned when the request asks for includeContent=true.",
+    "Only returned when the request asks for includeContent=true outside the public taxonomy scope.",
   ),
 });
 

@@ -106,9 +106,37 @@ describe("Admin posts list for external editors", () => {
       "includeContent=true&sortBy=id&sortDir=ASC&limit=2&offset=2",
     );
     expect(second.items.map((item) => item.id)).toEqual([ids[2]]);
-    expect(
-      [...first.items, ...second.items].map((item) => item.id),
-    ).toHaveLength(new Set(ids).size);
+    const scanned = [...first.items, ...second.items].map((item) => item.id);
+    expect(scanned).toHaveLength(ids.length);
+    expect(new Set(scanned).size).toBe(ids.length);
+  });
+
+  it("keeps offset pagination stable under the default sort when rows share updatedAt", async () => {
+    const apiKey = await createAdminApiKey();
+    const context = createAdminTestContext();
+    // updatedAt only has second precision, so rows written close together share
+    // it. Without the id tiebreaker SQLite may order them any way it likes and
+    // offset pages start repeating or skipping rows.
+    const sharedUpdatedAt = new Date("2026-01-01T00:00:00.000Z");
+    const inserted = await context.db
+      .insert(PostsTable)
+      .values(
+        Array.from({ length: 3 }, (_, index) => ({
+          title: `Tie ${index}`,
+          slug: `tie-${index}`,
+          updatedAt: sharedUpdatedAt,
+        })),
+      )
+      .returning({ id: PostsTable.id });
+    // The default sort is updatedAt DESC, so the tiebreaker orders ids DESC too.
+    const expectedOrder = inserted.map((row) => row.id).sort((a, b) => b - a);
+
+    const first = await listPosts(apiKey, "limit=2&offset=0");
+    const second = await listPosts(apiKey, "limit=2&offset=2");
+    const paged = [...first.items, ...second.items].map((item) => item.id);
+
+    expect(paged).toEqual(expectedOrder);
+    expect(new Set(paged).size).toBe(expectedOrder.length);
   });
 
   it("omits the body unless includeContent is requested", async () => {

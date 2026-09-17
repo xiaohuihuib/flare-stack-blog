@@ -237,7 +237,7 @@ export async function createDraft(context: DbContext, data: CreatePostData) {
   const post = await PostRepo.insertPost(context.db, {
     title: data.title,
     slug,
-    summary: data.summary ?? "",
+    summary: data.summary ?? null,
     status: "draft",
     contentJson: normalizePostContent(data.contentJson ?? null),
   });
