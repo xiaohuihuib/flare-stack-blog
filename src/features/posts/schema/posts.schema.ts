@@ -30,13 +30,21 @@ const PostSelectSchema = createSelectSchema(PostsTable, {
 }).omit({
   publicSnapshotJson: true,
 });
+/**
+ * Strict on purpose. `status`, `publicSlug` and `publicSnapshotJson` are not
+ * writable here, and a plain object would silently strip them: a client that
+ * PATCHed `{ status: "published" }` got a 200 back and a post that was still a
+ * draft. Rejecting the key says so instead.
+ */
 const PostUpdateSchema = createUpdateSchema(PostsTable, {
   contentJson: NullableJsonContentSchema.optional(),
-}).omit({
-  publicSnapshotJson: true,
-  publicSlug: true,
-  status: true,
-});
+})
+  .omit({
+    publicSnapshotJson: true,
+    publicSlug: true,
+    status: true,
+  })
+  .strict();
 
 export const PostItemSchema = PostSelectSchema.omit({
   contentJson: true,
