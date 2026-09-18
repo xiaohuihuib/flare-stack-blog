@@ -204,8 +204,6 @@ const update = adminProcedure
     method: "PATCH",
     path: "/admin/posts/{id}",
     summary: "Update a post",
-    description:
-      "Updates the draft. Unknown keys are rejected rather than ignored: publication is not a field here, use POST /admin/posts/{id}/publish and /unpublish.",
     tags: ["Admin Posts"],
   })
   .input(UpdatePostInputSchema)
