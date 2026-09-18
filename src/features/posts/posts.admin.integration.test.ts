@@ -199,6 +199,40 @@ describe("Admin posts API for external editors", () => {
     expect(post.title).toBe(`${MARK} strict patch`);
   });
 
+  it("refuses to let a client set id, createdAt or updatedAt", async () => {
+    const apiKey = await seedAdminApiKey();
+    const { id } = (await (
+      await callAdminApi(apiKey, "/admin/posts", {
+        method: "POST",
+        body: { data: { title: `${MARK} server owned`, contentJson: null } },
+      })
+    ).json()) as { id: number };
+    const before = (await (
+      await callAdminApi(apiKey, `/admin/posts/${id}`)
+    ).json()) as { createdAt: string; updatedAt: string };
+
+    // updatedAt is the default list sort key, so a forged value used to bury
+    // the post; createdAt drives the date shown to readers.
+    for (const forged of [
+      { createdAt: "2000-01-01T00:00:00.000Z" },
+      { updatedAt: "2000-01-01T00:00:00.000Z" },
+      { id: 999999 },
+    ]) {
+      const response = await callAdminApi(apiKey, `/admin/posts/${id}`, {
+        method: "PATCH",
+        body: { data: { title: "Patched", ...forged } },
+      });
+      expect(response.status).toBe(400);
+    }
+
+    const after = (await (
+      await callAdminApi(apiKey, `/admin/posts/${id}`)
+    ).json()) as { title: string; createdAt: string; updatedAt: string };
+    expect(after.createdAt).toBe(before.createdAt);
+    expect(after.updatedAt).toBe(before.updatedAt);
+    expect(after.title).toBe(`${MARK} server owned`);
+  });
+
   it("still accepts the fields the admin editor sends", async () => {
     const apiKey = await seedAdminApiKey();
     const { id } = (await (

@@ -31,10 +31,16 @@ const PostSelectSchema = createSelectSchema(PostsTable, {
   publicSnapshotJson: true,
 });
 /**
- * Strict on purpose. `status`, `publicSlug` and `publicSnapshotJson` are not
- * writable here, and a plain object would silently strip them: a client that
- * PATCHed `{ status: "published" }` got a 200 back and a post that was still a
- * draft. Rejecting the key says so instead.
+ * Strict on purpose, and narrower than the table.
+ *
+ * `createUpdateSchema` takes every column, so `id`, `createdAt` and
+ * `updatedAt` were writable: a PATCH could move a row to another id or
+ * backdate it, and `updatedAt` is the default list sort key, so a forged
+ * value buried the post. They are the server's to set, never the client's.
+ *
+ * Publication is not a field either. A plain object would silently strip
+ * these: a client that PATCHed `{ status: "published" }` got a 200 back and a
+ * post that was still a draft. Rejecting the key says so instead.
  */
 const PostUpdateSchema = createUpdateSchema(PostsTable, {
   contentJson: NullableJsonContentSchema.optional(),
@@ -43,6 +49,9 @@ const PostUpdateSchema = createUpdateSchema(PostsTable, {
     publicSnapshotJson: true,
     publicSlug: true,
     status: true,
+    id: true,
+    createdAt: true,
+    updatedAt: true,
   })
   .strict();
 
