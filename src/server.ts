@@ -12,6 +12,7 @@ import { handleQueueBatch } from "@/lib/queue/queue.handler";
 import { extractLocaleFromRequest } from "@/paraglide/runtime";
 import { paraglideMiddleware } from "@/paraglide/server";
 
+export { PostProcessWorkflow } from "@/features/posts/workflows/post-process";
 export { PostPublisher } from "@/lib/do/post-publisher";
 export { RateLimiter } from "@/lib/do/rate-limiter";
 

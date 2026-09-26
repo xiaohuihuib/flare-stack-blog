@@ -1,4 +1,5 @@
 import { invalidate } from "@/features/cache/public-cache";
+import * as AiService from "@/features/ai/ai.service";
 import * as PostRepo from "@/features/posts/data/posts.data";
 
 import * as TagRepo from "@/features/tags/data/tags.data";
@@ -6,6 +7,7 @@ import { publicTagList } from "@/features/tags/tags.cache";
 import type {
   CreateTagInput,
   DeleteTagInput,
+  GenerateTagsInput,
   GetTagsByPostIdInput,
   GetTagsInput,
   SetPostTagsInput,
@@ -187,4 +189,19 @@ export async function setPostTags(
       invalidate.tagChanged(context, { slugs: [post.publicSlug] }),
     );
   }
+}
+
+export async function generateTags(
+  context: DbContext,
+  data: GenerateTagsInput,
+) {
+  return AiService.generateTags(
+    context,
+    {
+      title: data.title,
+      summary: data.summary ?? undefined,
+      content: data.content,
+    },
+    data.existingTags,
+  );
 }

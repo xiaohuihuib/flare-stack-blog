@@ -743,6 +743,7 @@
   ],
   "editor_action_tags_none": "No new tags generated",
   "editor_action_tags_error": "Failed to generate tags",
+  "editor_action_summary_error": "Failed to generate summary",
   "editor_action_unknown_error": "Unknown error",
   "editor_image_upload_failed": "Upload failed",
   "editor_image_upload_success_desc": "Uploaded",

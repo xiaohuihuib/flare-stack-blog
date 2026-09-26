@@ -1,4 +1,5 @@
 import { invalidate } from "@/features/cache/public-cache";
+import * as AiService from "@/features/ai/ai.service";
 import * as CategoryRepo from "@/features/categories/data/categories.data";
 import * as MediaRepo from "@/features/media/data/media.data";
 import { syncPostMedia } from "@/features/posts/data/post-media.data";
@@ -19,6 +20,7 @@ import type {
   GetPostsCountInput,
   GetPostsCursorInput,
   GetPostsInput,
+  PreviewSummaryInput,
   PublishPostInput,
   UnpublishPostInput,
   UpdatePostInput,
@@ -30,7 +32,7 @@ import {
 import { toIsoOrNull } from "@/features/posts/public-snapshot";
 import type { PublicPostCover } from "@/lib/db/schema";
 
-import { slugify } from "@/features/posts/utils/content";
+import { convertToPlainText, slugify } from "@/features/posts/utils/content";
 import { normalizePostContent } from "@/features/posts/utils/normalize-content";
 import {
   isFuturePublishDate,
@@ -401,6 +403,50 @@ export async function findPostById(
   };
 }
 
+export async function generateSummaryByPostId({
+  context,
+  postId,
+}: {
+  context: DbContext;
+  postId: number;
+}) {
+  const post = await PostRepo.findPostById(context.db, postId);
+
+  if (!post) {
+    return err({ reason: "POST_NOT_FOUND" });
+  }
+
+  if (post.summary && post.summary.trim().length > 0) {
+    return ok(stripPublicSnapshot(post));
+  }
+
+  const plainText = convertToPlainText(post.contentJson);
+  if (plainText.length < 100) {
+    return ok(stripPublicSnapshot(post));
+  }
+
+  const { summary } = await AiService.summarizeText(context, plainText);
+
+  const updatedPost = await PostRepo.updatePost(context.db, post.id, {
+    summary,
+  });
+
+  if (!updatedPost) {
+    return err({ reason: "POST_NOT_FOUND" });
+  }
+
+  return ok(stripPublicSnapshot(updatedPost));
+}
+
+export async function previewSummary(
+  context: DbContext,
+  data: PreviewSummaryInput,
+) {
+  const plainText = convertToPlainText(data.contentJson);
+  const { summary } = await AiService.summarizeText(context, plainText);
+  return { summary };
+}
+
 export async function updatePost(
   context: DbContext & { executionCtx: ExecutionContext; env?: Env },
   data: UpdatePostInput,
@@ -559,6 +605,14 @@ export async function publishPost(
   }
   await invalidate.postPublished(context, { slug: snapshot.slug });
 
+  await context.env.POST_PROCESS_WORKFLOW.create({
+    params: {
+      postId: publishedPost.id,
+      isPublished: true,
+      slug: snapshot.slug,
+    },
+  });
+
   return ok({ success: true });
 }
 
@@ -580,6 +634,14 @@ export async function unpublishPost(
   await syncPostMedia(context.db, unpublished);
   await SearchService.deleteIndex(context, { id: post.id });
   await invalidate.postDeleted(context, { slug: publicSlug });
+
+  await context.env.POST_PROCESS_WORKFLOW.create({
+    params: {
+      postId: post.id,
+      isPublished: false,
+      slug: publicSlug,
+    },
+  });
 
   return ok({ success: true });
 }

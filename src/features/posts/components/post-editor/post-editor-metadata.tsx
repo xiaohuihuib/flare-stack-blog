@@ -1,4 +1,4 @@
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
 import DatePicker from "@/components/ui/date-picker";
 import { CategorySelect } from "@/features/categories/components/category-select";
@@ -12,15 +12,23 @@ import type { PostEditorData } from "./types";
 interface PostEditorMetadataProps {
   post: PostEditorData;
   isGeneratingSlug: boolean;
+  isGeneratingSummary: boolean;
+  isGeneratingTags: boolean;
   onPostChange: (updates: Partial<PostEditorData>) => void;
   onGenerateSlug: () => void;
+  onGenerateSummary: () => void;
+  onGenerateTags: () => void;
 }
 
 export function PostEditorMetadata({
   post,
   isGeneratingSlug,
+  isGeneratingSummary,
+  isGeneratingTags,
   onPostChange,
   onGenerateSlug,
+  onGenerateSummary,
+  onGenerateTags,
 }: PostEditorMetadataProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -39,7 +47,23 @@ export function PostEditorMetadata({
         </label>
 
         <div className="grid gap-2">
-          <p className="text-xs fuwari-text-50">{m.editor_meta_tags()}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs fuwari-text-50">{m.editor_meta_tags()}</p>
+            <button
+              type="button"
+              onClick={onGenerateTags}
+              disabled={isGeneratingTags}
+              className="flex items-center gap-1 text-[10px] font-mono fuwari-text-50 transition-colors hover:text-(--fuwari-primary) disabled:opacity-50"
+              aria-label={m.editor_meta_auto_generate()}
+            >
+              {isGeneratingTags ? (
+                <Loader2 size={10} className="animate-spin" />
+              ) : (
+                <Sparkles size={10} />
+              )}
+              {m.editor_meta_auto_generate()}
+            </button>
+          </div>
           <TagSelector
             value={post.tagIds}
             onChange={(tagIds) => onPostChange({ tagIds })}
@@ -126,8 +150,24 @@ export function PostEditorMetadata({
           </button>
         </div>
 
-        <label className="grid gap-2 text-xs fuwari-text-50">
-          {m.editor_meta_summary()}
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs fuwari-text-50">{m.editor_meta_summary()}</p>
+            <button
+              type="button"
+              onClick={onGenerateSummary}
+              disabled={isGeneratingSummary}
+              className="flex items-center gap-1 text-[10px] font-mono fuwari-text-50 transition-colors hover:text-(--fuwari-primary) disabled:opacity-50"
+              aria-label={m.editor_meta_auto_generate()}
+            >
+              {isGeneratingSummary ? (
+                <Loader2 size={10} className="animate-spin" />
+              ) : (
+                <Sparkles size={10} />
+              )}
+              {m.editor_meta_auto_generate()}
+            </button>
+          </div>
           <TextareaAutosize
             value={post.summary || ""}
             onChange={(e) => onPostChange({ summary: e.target.value })}
@@ -135,7 +175,7 @@ export function PostEditorMetadata({
             minRows={3}
             className="w-full resize-none rounded-xl bg-(--fuwari-btn-regular-bg) px-3 py-2.5 text-sm leading-relaxed fuwari-text-90 outline-none placeholder:fuwari-text-30"
           />
-        </label>
+        </div>
       </div>
     </div>
   );

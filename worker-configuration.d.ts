@@ -6,6 +6,7 @@ interface __BaseEnv_Env {
 	R2: R2Bucket;
 	DB: D1Database;
 	QUEUE: Queue;
+	AI: Ai;
 	ENVIRONMENT: string;
 	BETTER_AUTH_SECRET: string;
 	BETTER_AUTH_URL: string;
@@ -22,6 +23,7 @@ interface __BaseEnv_Env {
 	GITHUB_TOKEN: string;
 	RATE_LIMITER: DurableObjectNamespace<import("./src/server").RateLimiter>;
 	POST_PUBLISHER: DurableObjectNamespace<import("./src/server").PostPublisher>;
+	POST_PROCESS_WORKFLOW: Workflow<Parameters<import("./src/server").PostProcessWorkflow['run']>[0]['payload']>;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
@@ -33,6 +35,7 @@ declare namespace Cloudflare {
 		R2: R2Bucket;
 		DB: D1Database;
 		QUEUE: Queue;
+		AI: Ai;
 		ENVIRONMENT: string;
 		BETTER_AUTH_SECRET: string;
 		BETTER_AUTH_URL: string;
@@ -49,6 +52,7 @@ declare namespace Cloudflare {
 		GITHUB_TOKEN: string;
 		RATE_LIMITER: DurableObjectNamespace<import("./src/server").RateLimiter>;
 		POST_PUBLISHER: DurableObjectNamespace<import("./src/server").PostPublisher>;
+		POST_PROCESS_WORKFLOW: Workflow<Parameters<import("./src/server").PostProcessWorkflow['run']>[0]['payload']>;
 	}
 	interface Env extends __BaseEnv_Env {}
 }

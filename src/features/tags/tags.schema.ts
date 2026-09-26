@@ -45,8 +45,16 @@ export const GetTagsByPostIdInputSchema = z.object({
   postId: z.number(),
 });
 
+export const GenerateTagsInputSchema = z.object({
+  title: z.string(),
+  summary: z.string().nullable().optional(),
+  content: z.string().optional(),
+  existingTags: z.array(z.string()).optional(),
+});
+
 // Type exports
 export type Tag = z.infer<typeof TagSelectSchema>;
+export type GenerateTagsInput = z.infer<typeof GenerateTagsInputSchema>;
 export type CreateTagInput = z.infer<typeof CreateTagInputSchema>;
 export type UpdateTagInput = z.infer<typeof UpdateTagInputSchema>;
 export type DeleteTagInput = z.infer<typeof DeleteTagInputSchema>;

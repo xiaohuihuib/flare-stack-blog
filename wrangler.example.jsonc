@@ -56,6 +56,17 @@
       }
     ]
   },
+  "workflows": [
+    {
+      "name": "post-process-workflow",
+      "binding": "POST_PROCESS_WORKFLOW",
+      "class_name": "PostProcessWorkflow"
+    }
+  ],
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
   "queues": {
     "producers": [{ "binding": "QUEUE", "queue": "queue-name-placeholder" }],
     "consumers": [
@@ -119,7 +130,14 @@
       ],
       "queues": {
         "producers": [{ "binding": "QUEUE", "queue": "queue-name-placeholder" }]
-      }
+      },
+      "workflows": [
+        {
+          "name": "post-process-workflow",
+          "binding": "POST_PROCESS_WORKFLOW",
+          "class_name": "PostProcessWorkflow"
+        }
+      ]
     }
   }
 }

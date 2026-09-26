@@ -15,6 +15,7 @@ import {
   PostItemSchema,
   PostListResponseSchema,
   PostWithTocSchema,
+  PreviewSummaryInputSchema,
   PublishPostInputSchema,
   UnpublishPostInputSchema,
   UpdatePostInputSchema,
@@ -181,6 +182,16 @@ const generateSlug = adminProcedure
   })
   .input(GenerateSlugInputSchema)
   .handler(({ context, input }) => PostService.generateSlug(context, input));
+
+const previewSummary = adminProcedure
+  .route({
+    method: "POST",
+    path: "/admin/posts/preview-summary",
+    summary: "Preview a post summary",
+    tags: ["Admin Posts"],
+  })
+  .input(PreviewSummaryInputSchema)
+  .handler(({ context, input }) => PostService.previewSummary(context, input));
 
 const create = adminProcedure
   .route({
@@ -364,6 +375,7 @@ export default {
     list: adminList,
     get: adminGet,
     generateSlug,
+    previewSummary,
     create,
     update,
     remove,

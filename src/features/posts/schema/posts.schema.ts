@@ -166,6 +166,10 @@ export const GenerateSlugInputSchema = z.object({
   excludeId: z.number().optional(),
 });
 
+export const PreviewSummaryInputSchema = z.object({
+  contentJson: NullableJsonContentSchema,
+});
+
 const AdminTaxonomyFilterSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("category"),
@@ -278,6 +282,7 @@ export const UnpublishPostInputSchema = z.object({
 });
 
 export type GenerateSlugInput = z.infer<typeof GenerateSlugInputSchema>;
+export type PreviewSummaryInput = z.infer<typeof PreviewSummaryInputSchema>;
 export type GetPostsInput = z.infer<typeof GetPostsInputSchema>;
 export type GetPostsCountInput = z.infer<typeof GetPostsCountInputSchema>;
 export type FindPostByIdInput = z.infer<typeof FindPostByIdInputSchema>;
@@ -289,3 +294,7 @@ export type PublishPostInput = z.infer<typeof PublishPostInputSchema>;
 export type UnpublishPostInput = z.infer<typeof UnpublishPostInputSchema>;
 export type PostItem = z.infer<typeof PostItemSchema>;
 export type PostWithToc = z.infer<typeof PostWithTocSchema>;
+
+export const POSTS_CACHE_KEYS = {
+  syncHash: (id: number) => `post_hash:${id}` as const,
+} as const;

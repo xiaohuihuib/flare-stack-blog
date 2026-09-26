@@ -6,7 +6,15 @@ import type { DB as DBType } from "@/lib/db";
 import type { QueueMessage } from "@/lib/queue/queue.schema";
 
 declare global {
+  interface PostProcessWorkflowParams {
+    postId: number;
+    isPublished: boolean;
+    slug?: string;
+  }
+
   interface Env extends Cloudflare.Env {
+    AI: Ai;
+    POST_PROCESS_WORKFLOW: Workflow<PostProcessWorkflowParams>;
     QUEUE: Queue<QueueMessage>;
   }
 

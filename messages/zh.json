@@ -736,6 +736,7 @@
   ],
   "editor_action_tags_none": "没有生成新的标签",
   "editor_action_tags_error": "生成标签失败",
+  "editor_action_summary_error": "生成摘要失败",
   "editor_action_unknown_error": "未知错误",
   "editor_image_upload_failed": "上传失败",
   "editor_image_upload_success_desc": "上传成功",

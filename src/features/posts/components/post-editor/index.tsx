@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import type { JSONContent, Editor as TiptapEditor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import { extensions } from "@/features/posts/editor/config";
 import { CodeBlockHighlightProvider } from "@/features/posts/editor/extensions/code-block/code-block-highlight-context";
 import { postRevisionListQuery } from "@/features/posts/queries";
 import { normalizePostContent } from "@/features/posts/utils/normalize-content";
+import { tagsAdminQueryOptions } from "@/features/tags/queries";
 import { m } from "@/paraglide/messages";
 import { useAutoSave, usePostActions } from "./hooks";
 import { PostEditorHeader } from "./post-editor-header";
@@ -68,9 +69,15 @@ export function PostEditor({ initialData, onSave }: PostEditorProps) {
     withResolver: true,
   });
 
+  const { data: allTags = [] } = useQuery(tagsAdminQueryOptions());
+
   const {
     isGeneratingSlug,
+    isGeneratingSummary,
+    isGeneratingTags,
     handleGenerateSlug,
+    handleGenerateSummary,
+    handleGenerateTags,
     handlePublish,
     handleUnpublish,
     processState,
@@ -82,6 +89,7 @@ export function PostEditor({ initialData, onSave }: PostEditorProps) {
     setPost,
     setError,
     flush,
+    allTags,
   });
 
   const handleEditorCreated = useCallback((editor: TiptapEditor | null) => {
@@ -172,8 +180,12 @@ export function PostEditor({ initialData, onSave }: PostEditorProps) {
     <PostEditorMetadata
       post={post}
       isGeneratingSlug={isGeneratingSlug}
+      isGeneratingSummary={isGeneratingSummary}
+      isGeneratingTags={isGeneratingTags}
       onPostChange={handlePostChange}
       onGenerateSlug={handleGenerateSlug}
+      onGenerateSummary={handleGenerateSummary}
+      onGenerateTags={handleGenerateTags}
     />
   );
 
