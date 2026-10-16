@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { PublicLayout as SitePublicLayout } from "@/components/layout/public-layout";
 import { Toaster } from "@/components/layout/toaster";
 import { useLogout } from "@/features/auth/hooks/use-logout";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@/lib/auth/auth-client";
 import { CACHE_CONTROL } from "@/lib/constants";
 import { clientEnv } from "@/lib/env/client.env";
 import { isExternalNavHref } from "@/features/config/utils/nav-links";
